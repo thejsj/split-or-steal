@@ -5,21 +5,22 @@ var authController = {};
 
 authController.getUser = function (req, res) {
   var userId = null;
-  var userName = null;
-  var email = null;
-  var githubAvatarUrl = 'http://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
+  var login = null;
+  var url = null;
+  var githubAvatar = '';
+  console.log('req.user');
+  console.log(req.user);
   if (req.user && req.user.get('id') && typeof req.user.get('id') === 'number') {
-    userId = req.user.get('id');
-    email = req.user.get('email');
-    userName = req.user.get('username') || email;
-    githubAvatarUrl = req.user.get('githubAvatarUrl') || githubAvatarUrl;
+    userId = req.user.id;
+    login = req.user.login;
+    url = req.user.url || url;
+    githubAvatar = req.user.avatar;
   }
   res.json({
     userId: userId,
-    // userName: req.user.get('username'),
-    userName: userName,
-    email: email,
-    githubAvatarUrl: githubAvatarUrl
+    login: login,
+    url: url,
+    githubAvatar: new Buffer(githubAvatar, 'base64').toString('ascii')
   });
 };
 

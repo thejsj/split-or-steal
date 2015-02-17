@@ -31,8 +31,8 @@ r.connect(config.get('rethinkdb'))
         .then(function () {
           return r.table('users').indexList().run(r.conn)
             .then(function (indexList) {
-              if (indexList.indexOf('githubId') === -1) {
-                return r.table('users').indexCreate('githubId').run(r.conn);
+              if (indexList.indexOf('login') === -1) {
+                return r.table('users').indexCreate('login').run(r.conn);
               }
             });
         });

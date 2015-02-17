@@ -31,20 +31,21 @@ passport.use(new GitHubStrategy({
     if (accessToken !== null) {
       r
         .table('users')
-        .getAll(profile.username, { index: 'githubId' })
+        .getAll(profile.username, { index: 'login' })
         .run(r.conn)
-        .then(function (users) {
-          return q()
-            .then(function () {
+        .then(function (cursor) {
+          return cursor.toArray()
+            .then(function (users) {
               if (users.length > 0) {
-                return users[0];
+                return done(null, users[0]);
               }
+              console.log('Creating User');
               return r.table('users')
                 .insert({
                   'login': profile.username,
                   'name': profile.displayName,
                   'url': profile.profileUrl,
-                  'avatar': r.http(profile._json.avatar_url)
+                  'avatar': r.binary(r.http(profile._json.avatar_url))
                 })
                 .run(r.conn)
                 .then(function (response) {
