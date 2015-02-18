@@ -1,25 +1,24 @@
 /*jshint node:true */
 'use strict';
+var _ = require('lodash');
 
-var allClients = [];
+var connectedUsers = {};
 
 var socketHandler = function (io, socket) {
-  console.log('New Connection');
-  console.log(' ** Connected ** ');
-  console.log(io.sockets.connected);
 
-  socket.userId = req.
-
-  allClients.push(socket);
-
-  setTimeout(function () {
-    io.sockets.emit('newConnection', { 'userId': Math.random() });
+  socket.on('connectUser', function (user) {
+    if (connectedUsers[user.userId] === undefined) {
+      connectedUsers[user.userId] = user;
+      connectedUsers[user.userId].socketId = socket.id;
+      socket.emit('userUpdate', connectedUsers);
+    }
   });
 
   socket.on('disconnect', function() {
-    console.log('Got disconnect!');
-    var i = allClients.indexOf(socket);
-    delete allClients[i];
+    connectedUsers = _.filter(connectedUsers, function (user) {
+      return user.socketId !== socket.id;
+    });
+    socket.emit('userUpdate', connectedUsers);
    });
 };
 

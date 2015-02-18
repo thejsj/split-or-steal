@@ -4,9 +4,9 @@
 var authController = {};
 
 authController.getUser = function (req, res) {
-  var userId = null;
-  var login = null;
-  var url = null;
+  var userId = Math.random();
+  var login = 'thejsj';
+  var url = 'http://thejsj.com';
   var githubAvatar = '';
   if (req.user && req.user.get('id') && typeof req.user.get('id') === 'number') {
     userId = req.user.id;
