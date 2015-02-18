@@ -39,7 +39,6 @@ passport.use(new GitHubStrategy({
               if (users.length > 0) {
                 return done(null, users[0]);
               }
-              console.log('Creating User');
               return r.table('users')
                 .insert({
                   'login': profile.username,

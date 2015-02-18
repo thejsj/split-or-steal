@@ -8,8 +8,6 @@ authController.getUser = function (req, res) {
   var login = null;
   var url = null;
   var githubAvatar = '';
-  console.log('req.user');
-  console.log(req.user);
   if (req.user && req.user.get('id') && typeof req.user.get('id') === 'number') {
     userId = req.user.id;
     login = req.user.login;

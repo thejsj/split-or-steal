@@ -11,6 +11,7 @@ var io = require('socket.io')(server);
 
 var auth = require('./auth');
 var authRouter = require('./auth/authRouter');
+var socketHandler = require('./socket-handler');
 
 server.listen(8000);
 
@@ -42,6 +43,4 @@ app
     res.sendFile(path.join(cliendDirPath, '/landing.html'));
   });
 
-// io.on('connection', function (socket) {
-
-// });
+io.on('connection', socketHandler.bind(null, io));
