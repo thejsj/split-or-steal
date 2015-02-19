@@ -4,21 +4,18 @@
 var authController = {};
 
 authController.getUser = function (req, res) {
-  var userId = Math.random();
-  var login = 'thejsj';
-  var url = 'http://thejsj.com';
-  var githubAvatar = '';
-  if (req.user && req.user.get('id') && typeof req.user.get('id') === 'number') {
+  var userId = null, login = null, url = null, avatarUrl = null;
+  if (req.user && req.user.id) {
     userId = req.user.id;
     login = req.user.login;
     url = req.user.url || url;
-    githubAvatar = req.user.avatar;
+    avatarUrl = req.user.avatarUrl;
   }
   res.json({
     userId: userId,
     login: login,
     url: url,
-    githubAvatar: new Buffer(githubAvatar, 'base64').toString('ascii')
+    avatarUrl: avatarUrl
   });
 };
 

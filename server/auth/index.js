@@ -42,9 +42,9 @@ passport.use(new GitHubStrategy({
               return r.table('users')
                 .insert({
                   'login': profile.username,
-                  'name': profile.displayName,
+                  'name': profile.displayName || null,
                   'url': profile.profileUrl,
-                  'avatar': r.binary(r.http(profile._json.avatar_url))
+                  'avatarUrl': profile._json.avatar_url
                 })
                 .run(r.conn)
                 .then(function (response) {

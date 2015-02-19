@@ -3,19 +3,15 @@
 'use strict';
 var React = require('react');
 var _ = require('lodash');
+var UserSingleView = require('./user-single-view');
 
 var UserView = React.createClass({
   render: function() {
-    var users = this.props.users;
     return (
       <div className='user-collection-container'>
-        { _.map(users, function(item, i) {
-          return (
-            <div className='user'>
-              <p>Login { item.login }</p>
-            </div>
-          );
-        }, this)}
+        { _.map(this.props.users, function(user, i) {
+          return <UserSingleView key={ user.id } user={ user } />;
+        }, this) }
       </div>
     );
   }

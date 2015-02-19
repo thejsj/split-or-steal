@@ -23,16 +23,16 @@ A real-time web game based on the prisoner's dilemma using RethinkDB
     [x] Add all users to database
     [x] Add user gravatars to database (`r.binary`)
     [x] GitHub handle
-[ ] Login users and add them to the room in RT (only one room at the beginning)
-    [ ] Have a room variable that contains all users in the room
+[x] Login users and add them to the room in RT (only one room at the beginning)
+    [x] Have a room variable that contains all users in the room
 [ ] Add a Create Game button. Create a game
-    [ ] Insert new game into database with join for users
-    [ ] Add a score of 1000 to all players
+    [x] Insert new game into database with join for users
+    [x] Add a score of 1000 to all players
 [ ] Create a new round
     [ ] Start all players with score of 0
     [ ] Add winner, finalists, players
 [ ] Add UI for changing bets
-    [ ] Add LOCK button to lock bet
+    [x] Add LOCK button to lock bet
     [ ] Update the database when bet is locked
 [ ] When all bets are in (`.changes`)
     [ ] Calculate the average (`.reduce`)
