@@ -12,13 +12,14 @@ var render = function () {
     document.getElementById('container')
   );
 };
+window.render = render;
 
 // Publish user connection
 $.get('http://127.0.0.1:8000/auth/user')
   .then(function (_user) {
     window.user = _user;
-    console.log('conntedUser!');
-    socket.emit('connectUser', user);
+    console.log('connctedUser!');
+    socket.emit('connctedUser', user);
   });
 
 // Listen to new Users
