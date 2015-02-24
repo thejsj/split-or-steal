@@ -35,6 +35,19 @@ r.connect(config.get('rethinkdb'))
                 return r.table('users').indexCreate('login').run(r.conn);
               }
             });
+        })
+        .then(function () {
+            console.time('getConnctedUsers');
+            return r.table('games')
+              .get('7ad3d8dd-ba5b-4c6b-8d0c-3dc83c9e3175')('players')
+              .eqJoin('id', r.table('users'))
+              .without('id')
+              .zip()
+              // Add bets?
+              .run(r.conn)
+              .then(function () {
+                console.timeEnd('getConnctedUsers');
+              });
         });
     });
 });

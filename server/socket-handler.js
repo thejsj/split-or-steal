@@ -22,10 +22,10 @@ var connectedUsers = {}, currentGameId = false, currentRoundId = null;
 var socketHandler = function (io, socket) {
 
   var updateUsers = function () {
-    console.log('+ updateUsers');
+    console.time('updateUsers');
     getConnctedUsers(currentGameId, currentRoundId)
       .then(function (users) {
-        console.log('- updateUsers');
+        console.timeEnd('updateUsers');
         io.emit('userUpdate', users);
       });
   };
@@ -40,48 +40,48 @@ var socketHandler = function (io, socket) {
         createGame(connectedUsers)
           .then(function (res) {
             currentGameId = res.generated_keys[0];
-            console.log('New Game Created!', currentGameId);
+            console.log('@ New Game Created!', currentGameId);
 
-            // Create listener for loser (0)
-            onPlayerLosing(currentGameId, function () {
-              console.log(' - A Player Has Lost');
-            });
+            // // Create listener for loser (0)
+            // onPlayerLosing(currentGameId, function () {
+            //   console.log('@ A Player Has Lost');
+            // });
 
-            // Create listener for winner (3000)
-            onPlayerWinning(currentGameId, function () {
-              console.log('- A Player Has Won');
-            });
+            // // Create listener for winner (3000)
+            // onPlayerWinning(currentGameId, function () {
+            //   console.log('@ A Player Has Won');
+            // });
 
             // Given the key, create new round
             createRound(currentGameId)
               .then(function (res) {
                 currentRoundId = res.generated_keys[0];
-                console.log('New Round', currentRoundId);
+                console.log('@ New Round', currentRoundId);
                 io.emit('newRound', currentRoundId);
 
                 // Listen to All Bets
-                onAllPlayerBetsIn(currentGameId, currentRoundId, _.size(connectedUsers), function () {
-                  // Set Finalists
-                  return setFinalists(currentGameId, currentRoundId)
-                    .then(function () {
-                      console.log('Finalists Set');
-                      return removeBetsFromTotalScore(currentGameId, currentRoundId);
-                    })
-                    .then(function () {
-                      console.log('Set Round Pot');
-                      return setRoundPot(currentGameId, currentRoundId);
-                    })
-                    .then(updateUsers);
-                });
+                // onAllPlayerBetsIn(currentGameId, currentRoundId, _.size(connectedUsers), function () {
+                //   // Set Finalists
+                //   return setFinalists(currentGameId, currentRoundId)
+                //     .then(function () {
+                //       console.log('@ Finalists Set');
+                //       return removeBetsFromTotalScore(currentGameId, currentRoundId);
+                //     })
+                //     .then(function () {
+                //       console.log('@ Set Round Pot');
+                //       return setRoundPot(currentGameId, currentRoundId);
+                //     })
+                //     .then(updateUsers);
+                // });
 
-                // Listen to
-                onAllFinalistsIn(currentGameId, currentRoundId, function () {
-                  // splitPot
-                  splitPotAmongstFinalists(currentGameId, currentRoundId)
-                    .then(function () {
-                      console.log('Winner Set');
-                    });
-                });
+                // // Listen to
+                // onAllFinalistsIn(currentGameId, currentRoundId, function () {
+                //   // splitPot
+                //   splitPotAmongstFinalists(currentGameId, currentRoundId)
+                //     .then(function () {
+                //       console.log('@ Winner Set');
+                //     });
+                // });
               });
           });
       }
@@ -89,7 +89,6 @@ var socketHandler = function (io, socket) {
   });
 
   socket.on('placeBet', function (data) {
-    console.log('placeBet', data.roundId, data);
     placeBet(data.roundId, data.userId, data.betAmount)
       .then(function () {
         updateUsers();
@@ -97,7 +96,6 @@ var socketHandler = function (io, socket) {
   });
 
   socket.on('submitFinalistReponse', function (data) {
-    console.log('submitFinalistReponse', data);
     submitFinalistReponse(data.roundId, data.userId, data.finalistReponse)
       .then(updateUsers);
   });

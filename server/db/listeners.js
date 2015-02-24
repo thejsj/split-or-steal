@@ -17,7 +17,7 @@ var onPlayerLosing = function (currentGameId, callback) {
     .run(r.conn)
     .then(function (cursor) {
       // NOTE: Why does this fire at the beginning?
-      console.log('onPlayerLosing');
+      // console.log('onPlayerLosing');
       cursor.each(console.log);
     });
 };
@@ -35,7 +35,7 @@ var onPlayerWinning = function (currentGameId, callback) {
     .changes()
     .run(r.conn)
     .then(function (cursor) {
-      console.log('onPlayerWinning');
+      // console.log('onPlayerWinning');
       cursor.each(console.log);
     });
 };
@@ -44,13 +44,15 @@ var onAllPlayerBetsIn = function (currentGameId, currentRoundId, numberOfPlayers
  return r
     .table('rounds')
     .filter({ id: currentRoundId })('bets')
-    .changes()
+    // (0)
+    // .keys().count().ge(2)
+    // .changes()
     .run(r.conn)
     .then(function (cursor) {
       cursor.each(function (err, result) {
         // NOTE: Why can't I use size in the database size and be done with it!
         if (_.size(result.new_val) === numberOfPlayers) {
-          console.log('onAllPlayerBetsIn');
+          // console.log('onAllPlayerBetsIn');
           callback();
         }
       });
@@ -58,14 +60,18 @@ var onAllPlayerBetsIn = function (currentGameId, currentRoundId, numberOfPlayers
 };
 
 var onAllFinalistsIn = function (currentGameId, currentRoundId, callback) {
-  console.log('onAllFinalistsIn currentRoundId: ', currentRoundId);
+  // console.log('onAllFinalistsIn currentRoundId: ', currentRoundId);
   return r
     .table('rounds')
     .filter({ id: currentRoundId })('finalists')
+    // (0)
+    // .coerceTo('array')
+    // .map(r.row(1))
+    // .count(function (row) { return row.eq(null); }).eq(0)
     .changes()
     .run(r.conn)
     .then(function (cursor) {
-      console.log('onAllFinalistsIn');
+      // console.log('onAllFinalistsIn');
       cursor.each(function (err, result) {
         // NOTE: Could I get rid of this by using .toArray on the object
         if(_.filter(_.pairs(result.new_val), function (entry) {
