@@ -8,7 +8,7 @@ var auth = require('./index');
 var authRouter = express.Router();
 
 authRouter.use('/login/callback', auth.authenticate('github'), function (req, res) {
-  res.redirect('/#home');
+  res.redirect('/');
 });
 authRouter.get('/login', auth.authenticate('github'));
 authRouter.use('/user', authControllers.getUser);

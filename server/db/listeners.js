@@ -3,55 +3,6 @@
 var r = require('./index');
 var _ = require('lodash');
 
-var onPlayerLosing = function (currentGameId, callback) {
-  return r
-    .getNewConnection()
-    .then(function (conn) {
-      return r
-        .table('games')
-        .filter({id: currentGameId})('players')
-        .map(function (doc) {
-          return doc('score').min();
-        })
-        .filter(function (val) {
-          return val.le(0);
-        })
-        .changes()
-        .run(conn)
-        .then(function (cursor) {
-          // NOTE: Why does this fire at the beginning?
-          // console.log('onPlayerLosing');
-          cursor.each(function () {
-            console.log('Change in Losing Player');
-          });
-        });
-    });
-};
-
-var onPlayerWinning = function (currentGameId, callback) {
-  return r
-  .getNewConnection()
-  .then(function (conn) {
-    return r
-      .table('games')
-      .filter({id: currentGameId})('players')
-      .map(function (doc) {
-        return doc('score').max();
-      })
-      .filter(function (val) {
-        return val.ge(3000);
-      })
-      .changes()
-      .run(conn)
-      .then(function (cursor) {
-        // console.log('onPlayerWinning');
-        cursor.each(function () {
-          console.log('Change in onPlayerWinning');
-        });
-      });
-  });
-};
-
 var onAllPlayerBetsIn = function (currentGameId, currentRoundId, numberOfPlayers, callback) {
   return r
     .getNewConnection()
@@ -102,7 +53,5 @@ var onAllFinalistsIn = function (currentGameId, currentRoundId, callback) {
     });
 };
 
-exports.onPlayerLosing = onPlayerLosing;
-exports.onPlayerWinning = onPlayerWinning;
 exports.onAllPlayerBetsIn = onAllPlayerBetsIn;
 exports.onAllFinalistsIn = onAllFinalistsIn;

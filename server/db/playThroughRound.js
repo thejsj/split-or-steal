@@ -10,6 +10,8 @@ var removeBetsFromTotalScore = require('./operations').removeBetsFromTotalScore;
 var splitPotAmongstFinalists = require('./operations').splitPotAmongstFinalists;
 var createRound = require('./operations').createRound;
 var updateUsers = require('./operations').updateUsers;
+var checkLosingPlayers = require('./operations').checkLosingPlayers;
+var checkWinningPlayers = require('./operations').checkWinningPlayers;
 
 var onAllPlayerBetsIn = require('./listeners').onAllPlayerBetsIn;
 var onAllFinalistsIn = require('./listeners').onAllFinalistsIn;
@@ -41,8 +43,11 @@ var playThroughRound = function (gameData) {
         // Listen to
         onAllFinalistsIn(gameData.currentGameId, gameData.currentRoundId, function () {
           // splitPot
+
           splitPotAmongstFinalists(gameData.currentGameId, gameData.currentRoundId)
             .then(updateUsers.bind(null, gameData))
+            .then(checkLosingPlayers.bind(null, gameData))
+            .then(checkWinningPlayers.bind(null, gameData))
             .then(function () {
               console.log('@ Winner Set');
               resolve();
@@ -57,7 +62,6 @@ var playThroughRound = function (gameData) {
 };
 
 var playThroughRounds = function (gameData) {
-  console.log('playThroughRounds');
   return playThroughRound(gameData)
     .then(playThroughRounds.bind(null, gameData));
 };

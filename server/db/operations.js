@@ -12,7 +12,8 @@ var createGame = function (connectedUsers) {
       'players': _.map(_.pluck(connectedUsers, 'userId'), function (user) {
         return {
           id: user,
-          score: 1000
+          score: 1000,
+          playerLost: false
         };
       }),
       'numberOfPlayers': _.size(connectedUsers)
@@ -48,11 +49,9 @@ var placeBet = function (roundId, userId, betAmount) {
     .then(function (data) {
       return data;
     });
-
 };
 
 var getConnctedUsers = function (currentGameId, currentRoundId) {
-  console.log('getConnctedUsers');
   if (!currentGameId) return q();
   return r.table('games')
     .get(currentGameId)('players')
@@ -79,9 +78,8 @@ var getConnctedUsers = function (currentGameId, currentRoundId) {
 
 var setFinalists = function (currentGameId, currentRoundId) {
   var getMax = function (data) {
-    return _.max(_.pairs(data), function (entry) {
-      return entry[1];
-    });
+    var arr = _.sortBy(_.pairs(data), '1');
+    return arr[ Math.floor(arr.length / 2) ];
   };
   return r.table('rounds')
     .get(currentRoundId)('bets')
@@ -143,20 +141,6 @@ var removeBetsFromTotalScore = function (currentGameId, currentRoundId) {
     });
 };
 
-// var updateBetsFromTotalScore = function (currentGameId, currentRoundId) {
-//   console.log('updateBetsFromTotalScore');
-//   return r.table('rounds')
-//     .get(currentRoundId)('bets')
-//     .run(r.conn)
-//     .then(function (roundBets) {
-//       return updateBetsFromTotalScore(currentGameId, currentRoundId, roundBets);
-//     })
-//     .then(function (data) {
-//       console.log('updateBetsFromTotalScore');
-//       return data;
-//     });
-// };
-
 /**
  * @param `currentGameId<Number>`
  * @param `currentRoundId<Number>`
@@ -189,8 +173,6 @@ var updateBetsFromTotalScore = function (currentGameId, currentRoundId, bets) {
 var submitFinalistReponse = function(currentRoundId, userId, finalistReponse) {
   var finalistResponse = {};
   finalistResponse[userId] = finalistReponse;
-  console.log('submitFinalistReponse');
-  console.log(finalistResponse);
   return r.table('rounds')
     .get(currentRoundId)
     .update({ 'finalists': finalistResponse })
@@ -211,17 +193,13 @@ var splitPotAmongstFinalists = function (currentGameId, currentRoundId) {
       var pot = round.pot;
       var finalistResponses = _.pairs(round.finalists);
       var bets = round.bets;
-      console.log('pot', pot);
-      console.log('bets', bets);
-      console.log('finalistResponses', finalistResponses);
       if (finalistResponses[0][1] === 'steal' && finalistResponses[1][1] === 'steal') {
         console.log('No Winner: Both Steal');
         // Give Everyone Their Money Back
-        _.each(bets, function (value, key) {
-          if (key === finalistResponses[0][1] || key === finalistResponses[1][1]) {
-            delete bets[key];
-          }
-        });
+        console.log(bets);
+        delete bets[finalistResponses[0][0]];
+        delete bets[finalistResponses[1][0]];
+        console.log(bets);
         return updateBetsFromTotalScore(currentGameId, currentRoundId, bets);
       } else if (finalistResponses[0][1] === 'split' && finalistResponses[1][1] === 'split') {
         console.log('Split');
@@ -251,13 +229,76 @@ var splitPotAmongstFinalists = function (currentGameId, currentRoundId) {
 var updateUsers = function (gameData) {
   if (gameData.currentGameId === undefined) return;
   if (gameData.currentRoundId === undefined) return;
-  console.log('Update Users:', gameData.currentGameId, gameData.currentRoundId);
-  getConnctedUsers(gameData.currentGameId, gameData.currentRoundId)
+  return getConnctedUsers(gameData.currentGameId, gameData.currentRoundId)
     .then(function (users) {
       gameData.io.emit('userUpdate', users);
     });
 };
 
+var checkLosingPlayers = function (gameData) {
+  console.log('checkLosingPlayers');
+  return r
+    .table('games')
+    .get(gameData.currentGameId)('players')
+    // .filter(r.row('score').le(0))('id')
+    .run(r.conn)
+    .then(function (cursor) {
+      return cursor.toArray();
+    })
+    .then(function (players) {
+      players.forEach(function (player) {
+        if (player.score <= 0) player.playerLost = true;
+      });
+      return r
+        .table('games')
+        .get(gameData.currentGameId)
+        .update({
+          'players': players
+        })
+        .run(r.conn);
+    });
+};
+
+var checkWinningPlayers = function (gameData) {
+  return r
+    .table('games')
+    .get(gameData.currentGameId)('players')
+    .filter(r.row('score').ge(3000))
+    .run(r.conn)
+    .then(function (cursor){ return cursor.toArray(); })
+    .then(function (players) {
+      if (players.length > 0) return declareGameWinner(gameData, players[0]);
+      return;
+    })
+    .then(function () {
+      return r
+        .table('games')
+        .get(gameData.currentGameId)('players')
+        .filter(r.row('score').gt(0))
+        .run(r.conn)
+        .then(function (cursor){ return cursor.toArray(); })
+        .then(function (players) {
+          if (players.length === 1) return declareGameWinner(gameData, players[0]);
+          return;
+        });
+    });
+};
+
+var declareGameWinner = function (gameData, player) {
+  return r
+    .table('games')
+    .get(gameData.currentGameId)
+    .update({
+      'winner': player.id
+    })
+    .run(r.conn)
+    .then(function () {
+      return updateUsers(gameData);
+    })
+    .then(function () {
+      gameData.io.emit('gameWinner', player.id);
+    });
+};
 
 exports.createGame = createGame;
 exports.createRound = createRound;
@@ -269,3 +310,6 @@ exports.removeBetsFromTotalScore = removeBetsFromTotalScore;
 exports.submitFinalistReponse = submitFinalistReponse;
 exports.splitPotAmongstFinalists = splitPotAmongstFinalists;
 exports.updateUsers = updateUsers;
+exports.checkLosingPlayers = checkLosingPlayers;
+exports.checkWinningPlayers = checkWinningPlayers;
+exports.checkWinningPlayers = checkWinningPlayers;

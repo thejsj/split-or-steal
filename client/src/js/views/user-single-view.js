@@ -21,7 +21,6 @@ var UserSingleView = React.createClass({
     this.setState({ betAmount: value });
   },
   updateFinalistResponse: function () {
-    console.log('value', event.target.value);
     this.setState({ finalistReponse: event.target.value });
   },
   submitLock: function () {
@@ -46,7 +45,9 @@ var UserSingleView = React.createClass({
     var classes = cx({
       'locked': (this.props.user.bet !== undefined),
       'col-md-2': true,
-      'user': true
+      'user': true,
+      'finalist': (this.props.user.finalistReponse !== undefined),
+      'player-lost': (this.props.user.playerLost)
     });
     // BetBox
     var betBox = null;
@@ -59,11 +60,11 @@ var UserSingleView = React.createClass({
         </div>;
     }
     // Finalist Box
-    var finaslitBox = <i className="fa fa-lock"></i>;
+    var blockBox = <i className="fa fa-lock"></i>;
     if (this.props.user.finalist === null) {
       if (isUser) {
         if (this.state.finalistReponse) {
-          finaslitBox =
+          blockBox =
             <div className='finalist-box'>
               <select value={ this.state.finalistReponse } className='finalist-response option' onChange={ this.updateFinalistResponse }>
                 <option value='split'>Split</option>
@@ -72,9 +73,12 @@ var UserSingleView = React.createClass({
               <button className='finalist-response submit btn btn-primary' onClick={ this.submitFinalistReponse }>Submit</button>
             </div>;
         } else {
-          finaslitBox = <p className='message'>Your Response Has Been Submitted</p>;
+          blockBox = <p className='message'>Your Response Has Been Submitted</p>;
         }
       }
+    }
+    if (this.props.user.playerLost) {
+      blockBox = <p className='message'>Player Lost</p>;
     }
     // Score Box
     var scoreBox = null;
@@ -85,14 +89,30 @@ var UserSingleView = React.createClass({
           <h6 className='score'>{ this.props.user.score }</h6>
         </div>;
     }
+    // isFinalist
+    var isFinalistBox = null;
+    if (this.props.user.finalist !== undefined) {
+      isFinalistBox = <h3 className='finalist-header'>Finalist</h3>;
+    }
+    // currentBet
+    var currentBetBox = null;
+    if (this.props.allUsersHaveBet) {
+      currentBetBox =
+        <div className='score-box'>
+          <span className='label'>Current Bet</span>
+          <h6 className='score'>{ this.props.user.bet }</h6>
+        </div>;
+    }
     return (
       <div className={ classes }>
         <div className='lock-container'>
-          { finaslitBox }
+          { blockBox }
         </div>
         <div className='content'>
           <img src={ this.props.user.avatarUrl } />
           <h6 className='login-name'>{ this.props.user.login }</h6>
+          { currentBetBox }
+          { isFinalistBox }
           { scoreBox }
           { betBox }
         </div>

@@ -1,6 +1,7 @@
 /*jshint node:true */
 'use strict';
 
+var config = require('config');
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -12,8 +13,9 @@ var io = require('socket.io')(server);
 var auth = require('./auth');
 var authRouter = require('./auth/authRouter');
 var socketHandler = require('./socket-handler');
+var clientConfigParser = require('./client-config-parser');
 
-server.listen(8000);
+server.listen(config.get('ports').http);
 
 // Middleware
 app
@@ -33,6 +35,7 @@ app
 // Static Dirname
 var cliendDirPath = __dirname + '/../client';
 app
+  .use('/config.js', clientConfigParser)
   .use('/auth', authRouter)
   .use(express.static(cliendDirPath))
   .use('/', function (req, res) {

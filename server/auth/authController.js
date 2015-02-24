@@ -25,7 +25,7 @@ authController.logout = function (req, res) {
 };
 
 authController.login = function (req, res) {
-  res.redirect('/#/home');
+  res.redirect('/');
 };
 
 module.exports = authController;
