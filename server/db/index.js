@@ -5,9 +5,20 @@ var q = require('q');
 var r = require('rethinkdb');
 var config = require('config');
 
+r.connections = [];
+r.getNewConnection = function () {
+  return r.connect(config.get('rethinkdb'))
+    .then(function (conn) {
+      conn.use('split_or_steal');
+      r.connections.push(conn);
+      return conn;
+    });
+};
+
 r.connect(config.get('rethinkdb'))
 .then(function (conn) {
   r.conn = conn;
+  r.connections.push(conn);
   r.conn.use('split_or_steal');
   // Create Tables
   r.tableList().run(r.conn)
@@ -35,19 +46,6 @@ r.connect(config.get('rethinkdb'))
                 return r.table('users').indexCreate('login').run(r.conn);
               }
             });
-        })
-        .then(function () {
-            console.time('getConnctedUsers');
-            return r.table('games')
-              .get('7ad3d8dd-ba5b-4c6b-8d0c-3dc83c9e3175')('players')
-              .eqJoin('id', r.table('users'))
-              .without('id')
-              .zip()
-              // Add bets?
-              .run(r.conn)
-              .then(function () {
-                console.timeEnd('getConnctedUsers');
-              });
         });
     });
 });

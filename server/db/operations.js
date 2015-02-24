@@ -5,7 +5,6 @@ var _ = require('lodash');
 var q = require('q');
 
 var createGame = function (connectedUsers) {
-  console.time('createGame');
   return r
     .table('games')
     .insert({
@@ -20,29 +19,24 @@ var createGame = function (connectedUsers) {
     })
     .run(r.conn)
     .then(function (data) {
-      console.timeEnd('createGame');
       return data;
     });
 };
 
 var createRound = function (gameId) {
-  console.time('createRound');
   return r.table('rounds')
     .insert({
       'gameId': gameId,
-      'winner': null,
       'finalists': {},
       'bets': {}
     })
     .run(r.conn)
     .then(function (data) {
-      console.timeEnd('createRound');
       return data;
     });
 };
 
 var placeBet = function (roundId, userId, betAmount) {
-  console.time('placeBet');
   var bet = {};
   bet[userId] = betAmount;
   return r.table('rounds')
@@ -52,15 +46,14 @@ var placeBet = function (roundId, userId, betAmount) {
     })
     .run(r.conn)
     .then(function (data) {
-      console.timeEnd('placeBet');
       return data;
     });
 
 };
 
 var getConnctedUsers = function (currentGameId, currentRoundId) {
+  console.log('getConnctedUsers');
   if (!currentGameId) return q();
-  console.time('getConnctedUsers');
   return r.table('games')
     .get(currentGameId)('players')
     .eqJoin('id', r.table('users'))
@@ -79,14 +72,12 @@ var getConnctedUsers = function (currentGameId, currentRoundId) {
             if (round.bets[user.id] !== undefined) user.bet = round.bets[user.id];
             if (round.finalists[user.id] !== undefined) user.finalist = round.finalists[user.id];
           });
-          console.timeEnd('getConnctedUsers');
           return data;
         });
     });
 };
 
 var setFinalists = function (currentGameId, currentRoundId) {
-  console.time('setFinalists');
   var getMax = function (data) {
     return _.max(_.pairs(data), function (entry) {
       return entry[1];
@@ -112,14 +103,12 @@ var setFinalists = function (currentGameId, currentRoundId) {
         })
         .run(r.conn)
         .then(function (data) {
-          console.timeEnd('setFinalists');
           return data;
         });
     });
 };
 
 var setRoundPot = function (currentGameId, currentRoundId) {
-  console.time('setRoundPot');
   return r.table('rounds')
     .get(currentRoundId)('bets')
     .run(r.conn)
@@ -135,13 +124,11 @@ var setRoundPot = function (currentGameId, currentRoundId) {
         .run(r.conn);
     })
    .then(function (data) {
-      console.timeEnd('setRoundPot');
       return data;
     });
 };
 
 var removeBetsFromTotalScore = function (currentGameId, currentRoundId) {
-  console.timeEnd('removeBetsFromTotalScore');
   return r.table('rounds')
     .get(currentRoundId)('bets')
     .run(r.conn)
@@ -152,7 +139,6 @@ var removeBetsFromTotalScore = function (currentGameId, currentRoundId) {
       return updateBetsFromTotalScore(currentGameId, currentRoundId, roundBets);
     })
     .then(function (data) {
-      console.timeEnd('removeBetsFromTotalScore');
       return data;
     });
 };
@@ -178,7 +164,6 @@ var removeBetsFromTotalScore = function (currentGameId, currentRoundId) {
  * @return Promise
  */
 var updateBetsFromTotalScore = function (currentGameId, currentRoundId, bets) {
-  console.time('updateBetsFromTotalScore');
   return r.table('games')
     .get(currentGameId)('players')
     .run(r.conn)
@@ -197,13 +182,11 @@ var updateBetsFromTotalScore = function (currentGameId, currentRoundId, bets) {
         .run(r.conn);
     })
     .then(function (data) {
-      console.timeEnd('updateBetsFromTotalScore');
       return data;
     });
 };
 
 var submitFinalistReponse = function(currentRoundId, userId, finalistReponse) {
-  console.time('submitFinalistReponse');
   var finalistResponse = {};
   finalistResponse[userId] = finalistReponse;
   console.log('submitFinalistReponse');
@@ -213,13 +196,11 @@ var submitFinalistReponse = function(currentRoundId, userId, finalistReponse) {
     .update({ 'finalists': finalistResponse })
     .run(r.conn)
     .then(function (data) {
-      console.timeEnd('submitFinalistReponse');
       return data;
     });
 };
 
 var splitPotAmongstFinalists = function (currentGameId, currentRoundId) {
-  console.time('splitPotAmongstFinalists');
   // See if the post will be split,
   return r
     .table('rounds')
@@ -249,24 +230,34 @@ var splitPotAmongstFinalists = function (currentGameId, currentRoundId) {
         newBets[finalistResponses[1][0]] = pot / 2;
         return updateBetsFromTotalScore(currentGameId, currentRoundId, newBets);
       } else {
-        console.log('One Winner');
         // Give the whole pot to the winner
         var index;
         if (finalistResponses[0][1] === 'steal') {
           index = finalistResponses[0][0];
         }
-        if (finalistResponses[0][1] === 'steal') {
+        if (finalistResponses[1][1] === 'steal') {
           index = finalistResponses[1][0];
         }
         newBets[index] = pot;
+        console.log('One Winner', newBets);
         return updateBetsFromTotalScore(currentGameId, currentRoundId, newBets);
       }
     })
     .then(function (data) {
-      console.timeEnd('splitPotAmongstFinalists');
       return data;
     });
 };
+
+var updateUsers = function (gameData) {
+  if (gameData.currentGameId === undefined) return;
+  if (gameData.currentRoundId === undefined) return;
+  console.log('Update Users:', gameData.currentGameId, gameData.currentRoundId);
+  getConnctedUsers(gameData.currentGameId, gameData.currentRoundId)
+    .then(function (users) {
+      gameData.io.emit('userUpdate', users);
+    });
+};
+
 
 exports.createGame = createGame;
 exports.createRound = createRound;
@@ -277,3 +268,4 @@ exports.setRoundPot = setRoundPot;
 exports.removeBetsFromTotalScore = removeBetsFromTotalScore;
 exports.submitFinalistReponse = submitFinalistReponse;
 exports.splitPotAmongstFinalists = splitPotAmongstFinalists;
+exports.updateUsers = updateUsers;

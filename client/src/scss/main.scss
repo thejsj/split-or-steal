@@ -27,15 +27,70 @@
     text-align: center;
   }
 
+  .label {
+    display: block;
+    text-transform: uppercase;
+    color: #aaa;
+    font-size: 9px;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 0.2em;
+  }
+
   .bet-box {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
     input {
       max-width: 100%;
       text-align: right;
+    }
+    .lock {
+      margin-top: 5px;
+      width: 100%;
     }
   }
 
   .fa-lock {
     display: none;
+  }
+
+  .score-box {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    .score {
+      font-size: 2em;
+      text-align: center;
+      letter-spacing: 0.075em;
+      margin: 0;
+      margin-top: 5px;
+    }
+  }
+
+  .finalist-box {
+    background: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: block;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    // transform: translate(-50%, -50%);
+    position: absolute;
+    height: 89px;
+    width: 142px;
+    select.finalist-response {
+      width: 100%;
+    }
+    .btn {
+      margin-top: 10px;
+      width: 100%;
+    }
   }
 
   &.locked {
@@ -44,6 +99,18 @@
       height: 100%;
       position: absolute;
       background: rgba(0,0,0,0.5);
+      .meesage {
+        display: block;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        transform: translate(-50%, -50%);
+        position: absolute;
+        padding: 10px;
+        color: white;
+      }
       .fa-lock {
         display: block;
         margin: auto;

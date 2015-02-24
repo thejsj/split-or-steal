@@ -13,7 +13,12 @@ var UserSingleView = React.createClass({
     };
   },
   updateBet: function (event) {
-    this.setState({ betAmount: event.target.value });
+    var value = event.target.value;
+    if (this.props.user.score) {
+      value = Math.max(value, 0);
+      value = Math.min(this.props.user.score, value);
+    }
+    this.setState({ betAmount: value });
   },
   updateFinalistResponse: function () {
     console.log('value', event.target.value);
@@ -45,28 +50,40 @@ var UserSingleView = React.createClass({
     });
     // BetBox
     var betBox = null;
-    if (isUser) {
+    if (isUser && this.props.user.score) {
       betBox =
         <div className='bet-box '>
-          <input type='number' onChange={ this.updateBet } value={ this.state.betAmount } />
-          <button className='lock' onClick={ this.submitLock }>Lock Bet</button>
+          <span className='label'>Bet Amount</span>
+          <input type='number' name='bet-amount' onChange={ this.updateBet } value={ this.state.betAmount } />
+          <button className='lock btn btn-primary' onClick={ this.submitLock }>Lock Bet</button>
         </div>;
     }
     // Finalist Box
     var finaslitBox = <i className="fa fa-lock"></i>;
     if (this.props.user.finalist === null) {
       if (isUser) {
-        finaslitBox =
-          <div className='finalist-box'>
-            <select value={ this.state.finalistReponse } className='finalist-response option' onChange={ this.updateFinalistResponse }>
-              <option value='split'>Split</option>
-              <option value='steal'>Steal</option>
-            </select>
-            <button className='finalist-response submit' onClick={ this.submitFinalistReponse }>Submit</button>
-          </div>;
-      } else {
-        finaslitBox = <p>Your Response Has Been Submitted</p>;
+        if (this.state.finalistReponse) {
+          finaslitBox =
+            <div className='finalist-box'>
+              <select value={ this.state.finalistReponse } className='finalist-response option' onChange={ this.updateFinalistResponse }>
+                <option value='split'>Split</option>
+                <option value='steal'>Steal</option>
+              </select>
+              <button className='finalist-response submit btn btn-primary' onClick={ this.submitFinalistReponse }>Submit</button>
+            </div>;
+        } else {
+          finaslitBox = <p className='message'>Your Response Has Been Submitted</p>;
+        }
       }
+    }
+    // Score Box
+    var scoreBox = null;
+    if (this.props.user.score) {
+      scoreBox =
+        <div className='score-box'>
+          <span className='label'>Score</span>
+          <h6 className='score'>{ this.props.user.score }</h6>
+        </div>;
     }
     return (
       <div className={ classes }>
@@ -75,11 +92,9 @@ var UserSingleView = React.createClass({
         </div>
         <div className='content'>
           <img src={ this.props.user.avatarUrl } />
-          { betBox }
           <h6 className='login-name'>{ this.props.user.login }</h6>
-          <div className='score-box'>
-            <h6 className='score'>{ this.props.user.score }</h6>
-          </div>
+          { scoreBox }
+          { betBox }
         </div>
       </div>
     );
