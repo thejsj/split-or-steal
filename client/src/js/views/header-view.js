@@ -18,11 +18,7 @@ var HeaderView = React.createClass({
                   {this.props.thisUser.login} <span className="caret"></span>
                 </a>
                 <ul className="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li className="divider"></li>
-                  <li><a href="#">Separated link</a></li>
+                  <li><a href="/auth/logout">Logout</a></li>
                 </ul>
               </li>
             </ul>

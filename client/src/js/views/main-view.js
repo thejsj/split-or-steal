@@ -19,6 +19,7 @@ var MainView = React.createClass({
         roundId={ this.props.roundId }
       />;
     }
+    setTimeout(function (){ jQuery('.dropdown-toggle').dropdown(); }, 100);
     return (
       <div className='container main-view-container'>
         <HeaderView thisUser={ this.props.thisUser }/>

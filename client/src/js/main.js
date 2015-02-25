@@ -13,6 +13,7 @@ var MainView = require('./views/main-view');
     thisUser: {},
     winner: null
   };
+  window.game = game;
 
   var render = function (game) {
     console.log('render');

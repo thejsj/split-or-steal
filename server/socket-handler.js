@@ -14,7 +14,6 @@ var gameData = {
   currentRoundId: null
 };
 
-
 var socketHandler = function (io, socket) {
 
   // Set IO
