@@ -22,6 +22,10 @@ passport.deserializeUser(function (id, done) {
 });
 
 var callbackURL = 'http://' + config.get('url') + ':' + config.get('ports').http + '/auth/login/callback';
+if (config.get('ports').http) {
+  callbackURL = 'http://' + config.get('url') + '/auth/login/callback';
+}
+
 console.log('callbackURL', callbackURL);
 passport.use(new GitHubStrategy({
     clientID: config.get('github').clientID,
@@ -29,6 +33,7 @@ passport.use(new GitHubStrategy({
     callbackURL: callbackURL
   },
   function (accessToken, refreshToken, profile, done) {
+    console.log('GitHub Callback');
     // I'm not exactly sure when we use an accessToken and a refreshToken
     if (accessToken !== null) {
       r
@@ -39,6 +44,7 @@ passport.use(new GitHubStrategy({
           return cursor.toArray()
             .then(function (users) {
               if (users.length > 0) {
+                console.log('User Signed In:', users[0].login);
                 return done(null, users[0]);
               }
               return r.table('users')
@@ -55,6 +61,7 @@ passport.use(new GitHubStrategy({
                     .run(r.conn);
                 })
                 .then(function (newUser) {
+                  console.log('New user Added');
                   done(null, newUser);
                 });
             });
