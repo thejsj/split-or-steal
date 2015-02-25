@@ -32,7 +32,6 @@ app
   .use(auth.initialize())
   .use(auth.session());
 
-
 // Static Dirname
 var cliendDirPath = __dirname + '/../client';
 app
@@ -41,6 +40,7 @@ app
   .use(express.static(cliendDirPath))
   .use('/', function (req, res) {
     if (req.user) {
+      console.log('User authenticated:', req.user.login);
       res.sendFile(path.join(cliendDirPath , '/game.html'));
       return;
     }
