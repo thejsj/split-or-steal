@@ -44,6 +44,9 @@ app
       return;
     }
     res.sendFile(path.join(cliendDirPath, '/landing.html'));
+  })
+  .use('*', function (req, res) {
+    res.status(404).send('404 Not Found').end();
   });
 
 io.on('connection', socketHandler.bind(null, io));
