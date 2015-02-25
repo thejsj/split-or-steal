@@ -38,15 +38,6 @@ app
   .use('/config.js', clientConfigParser)
   .use('/auth', authRouter)
   .use(express.static(cliendDirPath))
-  .use('/', function (req, res) {
-    if (req.user) {
-      console.log('User authenticated:', req.user.login);
-      res.sendFile(path.join(cliendDirPath , '/game.html'));
-      return;
-    }
-    console.log('User not authenticated:', req.user);
-    res.sendFile(path.join(cliendDirPath, '/landing.html'));
-  })
   .use('*', function (req, res) {
     res.status(404).send('404 Not Found').end();
   });

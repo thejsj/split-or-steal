@@ -5,24 +5,29 @@ var React = require('react');
 
 var HeaderView = React.createClass({
   render: function () {
+    var loginBox = null;
+    if (this.props.thisUser) {
+      loginBox =
+        <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul className="nav navbar-nav navbar-right">
+            <li className="dropdown">
+              <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                {this.props.thisUser.login} <span className="caret"></span>
+              </a>
+              <ul className="dropdown-menu" role="menu">
+                <li><a href="/auth/logout">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>;
+    }
     return (
       <nav className="navbar navbar-default">
         <div className="container-fluid">
           <div className="navbar-header">
             <a className="navbar-brand" href="#">Split Or Steal</a>
           </div>
-          <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul className="nav navbar-nav navbar-right">
-              <li className="dropdown">
-                <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                  {this.props.thisUser.login} <span className="caret"></span>
-                </a>
-                <ul className="dropdown-menu" role="menu">
-                  <li><a href="/auth/logout">Logout</a></li>
-                </ul>
-              </li>
-            </ul>
-          </div>
+          { loginBox }
         </div>
       </nav>
     );

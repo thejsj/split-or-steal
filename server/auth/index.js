@@ -22,7 +22,7 @@ passport.deserializeUser(function (id, done) {
 });
 
 var callbackURL = 'http://' + config.get('url') + ':' + config.get('ports').http + '/auth/login/callback';
-if (config.get('ports').http) {
+if (config.get('ports').http === '80') {
   callbackURL = 'http://' + config.get('url') + '/auth/login/callback';
 }
 

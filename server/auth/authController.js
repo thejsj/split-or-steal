@@ -4,19 +4,16 @@
 var authController = {};
 
 authController.getUser = function (req, res) {
-  var userId = null, login = null, url = null, avatarUrl = null;
   if (req.user && req.user.id) {
-    userId = req.user.id;
-    login = req.user.login;
-    url = req.user.url || url;
-    avatarUrl = req.user.avatarUrl;
+    res.json({
+      userId: req.user.id,
+      login: req.user.login,
+      url: req.user.url,
+      avatarUrl: req.user.avatarUrl
+    });
+    return;
   }
-  res.json({
-    userId: userId,
-    login: login,
-    url: url,
-    avatarUrl: avatarUrl
-  });
+  res.json(null);
 };
 
 authController.logout = function (req, res) {

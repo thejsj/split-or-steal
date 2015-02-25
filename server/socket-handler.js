@@ -24,6 +24,7 @@ var socketHandler = function (io, socket) {
       console.log('New connctedUser', user.userId, _.size(gameData.connectedUsers));
       gameData.connectedUsers[user.userId] = user;
       gameData.connectedUsers[user.userId].socketId = socket.id;
+      updateUsers(gameData);
       if (_.size(gameData.connectedUsers) >= 2 && !gameData.currentGameId) {
         // Create new game in the database (what will be the structure)
         createGame(gameData.connectedUsers)

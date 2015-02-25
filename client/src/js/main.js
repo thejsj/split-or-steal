@@ -9,7 +9,7 @@ var MainView = require('./views/main-view');
 
   var game = {
     socket: io.connect('http://' + window.config.url + ':' + window.config.ports.http),
-    connectedUsers: [],
+    connectedUsers: {},
     thisUser: {},
     winner: null
   };
@@ -34,11 +34,14 @@ var MainView = require('./views/main-view');
     .then(function (_user) {
       game.thisUser = _user;
       render(game);
-      game.socket.emit('connctedUser', game.thisUser);
+      if (game.thisUser) {
+        game.socket.emit('connctedUser', game.thisUser);
+      }
     });
 
   // Listen to new Users
   game.socket.on('userUpdate', function (_connectedUsers) {
+    console.log('userUpdate');
     game.connectedUsers = _connectedUsers;
     render(game);
   });

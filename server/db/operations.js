@@ -227,7 +227,9 @@ var splitPotAmongstFinalists = function (currentGameId, currentRoundId) {
 };
 
 var updateUsers = function (gameData) {
-  if (gameData.currentGameId === undefined) return;
+  if (gameData.currentGameId === undefined || gameData.currentRoundId === undefined) {
+    return gameData.io.emit('userUpdate', gameData.connectedUsers);
+  }
   if (gameData.currentRoundId === undefined) return;
   return getConnctedUsers(gameData.currentGameId, gameData.currentRoundId)
     .then(function (users) {
