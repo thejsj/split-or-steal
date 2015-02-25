@@ -1,0 +1,16 @@
+server:
+  build: .
+  # image: dockerfile/nodejs-bower-gulp-runtime
+  ports:
+   - "9050:80"
+  links:
+   - "rethinkdb"
+  environment:
+    NODE_ENV: production
+    PORT: 80
+rethinkdb:
+  image: dockerfile/rethinkdb
+  ports:
+   - "9051:8080"
+   - "28015:28015"
+   - "29015:29015"
