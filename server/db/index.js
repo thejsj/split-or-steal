@@ -16,38 +16,43 @@ r.getNewConnection = function () {
 };
 
 r.connect(config.get('rethinkdb'))
-.then(function (conn) {
-  r.conn = conn;
-  r.connections.push(conn);
-  r.conn.use('split_or_steal');
-  // Create Tables
-  r.tableList().run(r.conn)
-    .then(function (tableList) {
-      return q()
-        .then(function() {
-          if (tableList.indexOf('games') === -1) {
-            return r.tableCreate('games').run(r.conn);
-          }
-        })
-        .then(function() {
-          if (tableList.indexOf('rounds') === -1) {
-            return r.tableCreate('rounds').run(r.conn);
-          }
-        })
-        .then(function () {
-          if (tableList.indexOf('users') === -1) {
-            return r.tableCreate('users').run(r.conn);
-          }
-        })
-        .then(function () {
-          return r.table('users').indexList().run(r.conn)
-            .then(function (indexList) {
-              if (indexList.indexOf('login') === -1) {
-                return r.table('users').indexCreate('login').run(r.conn);
-              }
-            });
-        });
-    });
-});
+  .then(function (conn) {
+    r.conn = conn;
+    r.connections.push(conn);
+    return r.dbCreate('split_or_steal').run(r.conn)
+      .then(function () {})
+      .catch(function () {})
+      .then(function () {
+        r.conn.use('split_or_steal');
+        // Create Tables
+        return r.tableList().run(r.conn)
+          .then(function (tableList) {
+            return q()
+              .then(function() {
+                if (tableList.indexOf('games') === -1) {
+                  return r.tableCreate('games').run(r.conn);
+                }
+              })
+              .then(function() {
+                if (tableList.indexOf('rounds') === -1) {
+                  return r.tableCreate('rounds').run(r.conn);
+                }
+              })
+              .then(function () {
+                if (tableList.indexOf('users') === -1) {
+                  return r.tableCreate('users').run(r.conn);
+                }
+              })
+              .then(function () {
+                return r.table('users').indexList().run(r.conn)
+                  .then(function (indexList) {
+                    if (indexList.indexOf('login') === -1) {
+                      return r.table('users').indexCreate('login').run(r.conn);
+                    }
+                  });
+              });
+          });
+      });
+  });
 
 module.exports = r;

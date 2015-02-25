@@ -6,8 +6,6 @@ var browserify = require('browserify');
 var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var reactify = require('reactify');
-var uglify = require('gulp-uglify');
-var streamify = require('gulp-streamify');
 
 var sass = require('gulp-sass');
 var concat = require('gulp-concat');
