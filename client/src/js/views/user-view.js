@@ -10,11 +10,17 @@ var UserView = React.createClass({
     var allUsersHaveBet = _.some(this.props.users, function (user) {
       return user.finalist !== undefined;
     });
-    console.log('allUsersHaveBet', allUsersHaveBet);
     return (
       <div className='user-collection-container'>
         { _.map(this.props.users, function(user, i) {
-          return <UserSingleView key={ user.id } user={ user } allUsersHaveBet={ allUsersHaveBet } />;
+          return <UserSingleView
+            key={ user.id }
+            user={ user }
+            thisUser={ this.props.thisUser }
+            allUsersHaveBet={ allUsersHaveBet }
+            socket={ this.props.socket }
+            roundId={ this.props.roundId }
+          />;
         }, this) }
       </div>
     );

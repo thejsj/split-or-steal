@@ -12,11 +12,16 @@ var MainView = React.createClass({
         <p>Not Enough Users</p>
       </div>;
     if (this.props.users.length > 0) {
-      userView = <UserView users={ this.props.users }/>;
+      userView = <UserView
+        users={ this.props.users }
+        socket={ this.props.socket }
+        thisUser={ this.props.thisUser }
+        roundId={ this.props.roundId }
+      />;
     }
     return (
       <div className='container main-view-container'>
-        <HeaderView user={ this.props.user }/>
+        <HeaderView thisUser={ this.props.thisUser }/>
         { userView }
       </div>
     );

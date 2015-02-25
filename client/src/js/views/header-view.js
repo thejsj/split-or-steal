@@ -15,7 +15,7 @@ var HeaderView = React.createClass({
             <ul className="nav navbar-nav navbar-right">
               <li className="dropdown">
                 <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                  {this.props.user.login} <span className="caret"></span>
+                  {this.props.thisUser.login} <span className="caret"></span>
                 </a>
                 <ul className="dropdown-menu" role="menu">
                   <li><a href="#">Action</a></li>

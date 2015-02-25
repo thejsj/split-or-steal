@@ -5,47 +5,59 @@ var React = require('react');
 var _ = require('lodash');
 var MainView = require('./views/main-view');
 
-window.socket = io.connect('http://' + window.config.url + ':' + window.config.ports.http);
+(function () {
 
-var render = function () {
-  React.render(
-    <MainView users={ connectedUsers } user={ user }/>,
-    document.getElementById('container')
-  );
-};
-window.connectedUsers = []
-window.user = {};
-window.render = render;
-window.render();
+  var game = {
+    socket: io.connect('http://' + window.config.url + ':' + window.config.ports.http),
+    connectedUsers: [],
+    thisUser: {},
+    winner: null
+  };
 
-// Publish user connection
-$.get('http://' + window.config.url + ':' + window.config.ports.http + '/auth/user')
-  .then(function (_user) {
-    window.user = _user;
-    window.render();
-    socket.emit('connctedUser', user);
+  var render = function (game) {
+    console.log('render');
+    React.render(
+      <MainView
+        users={ game.connectedUsers }
+        thisUser={ game.thisUser }
+        socket={ game.socket }
+        roundId={ game.roundId }
+      />,
+      document.getElementById('container')
+    );
+  };
+  // Render for the first time
+  render(game);
+
+  // Publish user connection
+  $.get('http://' + window.config.url + ':' + window.config.ports.http + '/auth/user')
+    .then(function (_user) {
+      game.thisUser = _user;
+      render(game);
+      game.socket.emit('connctedUser', game.thisUser);
+    });
+
+  // Listen to new Users
+  game.socket.on('userUpdate', function (_connectedUsers) {
+    game.connectedUsers = _connectedUsers;
+    render(game);
   });
 
-// Listen to new Users
-window.socket.on('userUpdate', function (_connectedUsers) {
-  window.connectedUsers = _connectedUsers;
-  render(connectedUsers, user, socket);
-});
+  // Listen to Game Start
+  game.socket.on('gameStart', function () {});
 
-// Listen to Game Start
-window.socket.on('gameStart', function () {
+  // Listen to New Round
+  game.socket.on('newRound', function (_roundId) {
+    game.roundId = _roundId;
+    render(game)
+  });
 
-});
+  // Listen to Game Winner
+  game.socket.on('gameWinner', function (userID) {
+    game.winner = _.findWhere(game.connectedUsers, { id: userID });
+    alert(game.winner.login + ' is the winner');
+    game.location.reload();
+  });
 
-// Listen to New Round
-window.socket.on('newRound', function (_roundId) {
-  window.roundId = _roundId;
-});
+}());
 
-
-// Listen to New Round
-window.socket.on('gameWinner', function (userID) {
-  window.winner = _.findWhere(window.connectedUsers, { id: userID });
-  alert(window.winner.login + ' is the winner');
-  window.location.reload();
-});

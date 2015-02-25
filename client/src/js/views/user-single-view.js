@@ -24,23 +24,23 @@ var UserSingleView = React.createClass({
     this.setState({ finalistReponse: event.target.value });
   },
   submitLock: function () {
-    window.socket.emit('placeBet', {
-      userId: window.user.userId,
+    this.props.socket.emit('placeBet', {
+      userId: this.props.thisUser.userId,
       betAmount: this.state.betAmount,
-      roundId: window.roundId
+      roundId: this.props.roundId
     });
   },
   submitFinalistReponse: function () {
     if (this.state.finalistReponse !== null) {
-      window.socket.emit('submitFinalistReponse', {
-        userId: window.user.userId,
+      this.props.socket.emit('submitFinalistReponse', {
+        userId: this.props.thisUser.userId,
         finalistReponse: this.state.finalistReponse,
-        roundId: window.roundId
+        roundId: this.props.roundId
       });
     }
   },
   render: function() {
-    var isUser = (this.props.user.login === window.user.login);
+    var isUser = (this.props.user.login === this.props.thisUser.login);
     var cx = React.addons.classSet;
     var classes = cx({
       'locked': (this.props.user.bet !== undefined),
@@ -99,7 +99,7 @@ var UserSingleView = React.createClass({
     if (this.props.allUsersHaveBet) {
       currentBetBox =
         <div className='score-box'>
-          <span className='label'>Current Bet</span>
+          <span className='label'>Current Bet</span>gul
           <h6 className='score'>{ this.props.user.bet }</h6>
         </div>;
     }
