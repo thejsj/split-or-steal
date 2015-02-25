@@ -13,12 +13,16 @@ var render = function () {
     document.getElementById('container')
   );
 };
+window.connectedUsers = []
+window.user = {};
 window.render = render;
+window.render();
 
 // Publish user connection
 $.get('http://' + window.config.url + ':' + window.config.ports.http + '/auth/user')
   .then(function (_user) {
     window.user = _user;
+    window.render();
     socket.emit('connctedUser', user);
   });
 

@@ -7,10 +7,17 @@ var UserView = require('./user-view');
 
 var MainView = React.createClass({
   render: function () {
+    var userView =
+      <div className='not-enough-users'>
+        <p>Not Enough Users</p>
+      </div>;
+    if (this.props.users.length > 0) {
+      userView = <UserView users={ this.props.users }/>;
+    }
     return (
       <div className='container main-view-container'>
         <HeaderView user={ this.props.user }/>
-        <UserView users={ this.props.users }/>
+        { userView }
       </div>
     );
   }
