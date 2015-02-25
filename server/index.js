@@ -2,6 +2,7 @@
 'use strict';
 
 var config = require('config');
+console.log(config);
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');

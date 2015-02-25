@@ -21,10 +21,12 @@ passport.deserializeUser(function (id, done) {
     });
 });
 
+var callbackURL = 'http://' + config.get('url') + ':' + config.get('ports').http + '/auth/login/callback';
+console.log('callbackURL', callbackURL);
 passport.use(new GitHubStrategy({
     clientID: config.get('github').clientID,
     clientSecret: config.get('github').clientSecret,
-    callbackURL: 'http://' + config.get('url') + ':' + config.get('ports').http + '/auth/login/callback'
+    callbackURL: callbackURL
   },
   function (accessToken, refreshToken, profile, done) {
     // I'm not exactly sure when we use an accessToken and a refreshToken
