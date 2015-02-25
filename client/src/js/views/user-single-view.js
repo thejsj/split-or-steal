@@ -45,6 +45,7 @@ var UserSingleView = React.createClass({
     var classes = cx({
       'locked': (this.props.user.bet !== undefined),
       'col-sm-2': true,
+      'col-xs-6': true,
       'user': true,
       'finalist': (this.props.user.finalistReponse !== undefined),
       'player-lost': (this.props.user.playerLost)
