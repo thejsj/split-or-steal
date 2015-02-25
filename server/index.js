@@ -44,6 +44,7 @@ app
       res.sendFile(path.join(cliendDirPath , '/game.html'));
       return;
     }
+    console.log('User not authenticated:', req.user);
     res.sendFile(path.join(cliendDirPath, '/landing.html'));
   })
   .use('*', function (req, res) {

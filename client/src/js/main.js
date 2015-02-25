@@ -16,7 +16,6 @@ var MainView = require('./views/main-view');
   window.game = game;
 
   var render = function (game) {
-    console.log('render');
     React.render(
       <MainView
         users={ game.connectedUsers }
@@ -50,7 +49,7 @@ var MainView = require('./views/main-view');
   // Listen to New Round
   game.socket.on('newRound', function (_roundId) {
     game.roundId = _roundId;
-    render(game)
+    render(game);
   });
 
   // Listen to Game Winner

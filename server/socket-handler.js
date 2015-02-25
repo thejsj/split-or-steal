@@ -48,6 +48,14 @@ var socketHandler = function (io, socket) {
       .then(updateUsers.bind(null, gameData));
   });
 
+  socket.on('endGame', function () {
+    console.log('@ End Game');
+    gameData.connectedUsers = {};
+    gameData.currentGameId = false;
+    gameData.currentRoundId = null;
+    updateUsers(gameData);
+  });
+
   socket.on('disconnect', function() {
     _.each(gameData.connectedUsers, function (user, key) {
       if (user.socketId === socket.id) delete gameData.connectedUsers[key];

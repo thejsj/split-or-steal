@@ -4,6 +4,7 @@
 var React = require('react');
 var HeaderView = require('./header-view');
 var UserView = require('./user-view');
+var _ = require('lodash');
 
 var MainView = React.createClass({
   render: function () {
@@ -11,7 +12,7 @@ var MainView = React.createClass({
       <div className='not-enough-users'>
         <p>Not Enough Users</p>
       </div>;
-    if (this.props.users.length > 0) {
+    if (_.size(this.props.users) > 0) {
       userView = <UserView
         users={ this.props.users }
         socket={ this.props.socket }
