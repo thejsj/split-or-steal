@@ -21,7 +21,7 @@ var socketHandler = function (io, socket) {
 
   socket.on('connctedUser', function (user) {
     if (gameData.connectedUsers[user.userId] === undefined) {
-      console.log('New connctedUser', user.userId);
+      console.log('New connctedUser', user.userId, _.size(gameData.connectedUsers));
       gameData.connectedUsers[user.userId] = user;
       gameData.connectedUsers[user.userId].socketId = socket.id;
       if (_.size(gameData.connectedUsers) >= 2 && !gameData.currentGameId) {
