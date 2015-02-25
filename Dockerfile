@@ -19,6 +19,7 @@ RUN npm install
 ADD run.sh /run.sh
 RUN chmod -R 777 /run.sh
 RUN chmod +x /run.sh
+RUN gulp
 
 # Expose ports.
 EXPOSE 80
