@@ -44,9 +44,9 @@ var UserSingleView = React.createClass({
     var cx = React.addons.classSet;
     var classes = cx({
       'locked': (this.props.user.bet !== undefined),
+      'col-xs-4': true,
       'col-sm-3': true,
       'col-md-2': true,
-      'col-xs-6': true,
       'center-block': true,
       'user': true,
       'finalist': (this.props.user.finalistReponse !== undefined),
