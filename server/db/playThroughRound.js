@@ -26,33 +26,34 @@ var playThroughRound = function (gameData) {
         gameData.io.emit('newRound', gameData.currentRoundId);
 
         // Listen to All Bets
-        onAllPlayerBetsIn(gameData.currentGameId, gameData.currentRoundId, _.size(gameData.connectedUsers), function () {
-          // Set Finalists
-          return setFinalists(gameData.currentGameId, gameData.currentRoundId)
-            .then(function () {
-              console.log('@ Finalists Set');
-              return removeBetsFromTotalScore(gameData.currentGameId, gameData.currentRoundId);
-            })
-            .then(function () {
-              console.log('@ Set Round Pot');
-              return setRoundPot(gameData.currentGameId, gameData.currentRoundId);
-            })
-            .then(updateUsers.bind(null, gameData));
-        });
+        onAllPlayerBetsIn(gameData.currentGameId, gameData.currentRoundId, _.size(gameData.connectedUsers))
+          .then(function () {
+            // Set Finalists
+            return setFinalists(gameData.currentGameId, gameData.currentRoundId)
+              .then(function () {
+                console.log('@ Finalists Set');
+                return removeBetsFromTotalScore(gameData.currentGameId, gameData.currentRoundId);
+              })
+              .then(function () {
+                console.log('@ Set Round Pot');
+                return setRoundPot(gameData.currentGameId, gameData.currentRoundId);
+              })
+              .then(updateUsers.bind(null, gameData));
+          });
 
         // Listen to
-        onAllFinalistsIn(gameData.currentGameId, gameData.currentRoundId, function () {
-          // splitPot
-
-          splitPotAmongstFinalists(gameData.currentGameId, gameData.currentRoundId)
-            .then(updateUsers.bind(null, gameData))
-            .then(checkLosingPlayers.bind(null, gameData))
-            .then(checkWinningPlayers.bind(null, gameData))
-            .then(function () {
-              console.log('@ Winner Set');
-              resolve();
-            });
-        });
+        onAllFinalistsIn(gameData.currentGameId, gameData.currentRoundId)
+          .then(function () {
+            // splitPot
+            splitPotAmongstFinalists(gameData.currentGameId, gameData.currentRoundId)
+              .then(updateUsers.bind(null, gameData))
+              .then(checkLosingPlayers.bind(null, gameData))
+              .then(checkWinningPlayers.bind(null, gameData))
+              .then(function () {
+                console.log('@ Winner Set');
+                resolve();
+              });
+          });
 
         // Users need to know there's a new round
         updateUsers(gameData);

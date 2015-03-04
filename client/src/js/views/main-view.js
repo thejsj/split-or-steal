@@ -12,7 +12,7 @@ var MainView = React.createClass({
     setTimeout(function (){ jQuery('.dropdown-toggle').dropdown(); }, 100);
     return (
       <div className='container main-view-container'>
-        <HeaderView thisUser={ this.props.thisUser }/>
+        <HeaderView thisUser={ this.props.thisUser } socket={ this.props.socket } />
         <LoginView thisUser={ this.props.thisUser }/>
         <UserView
           users={ this.props.users }

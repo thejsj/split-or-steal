@@ -4,6 +4,10 @@
 var React = require('react');
 
 var UserMenuView = React.createClass({
+  endGame: function () {
+    console.log('End Game');
+    this.props.socket.emit('endGame');
+  },
   render: function () {
     if (!this.props.thisUser) return (null);
     return (
@@ -14,6 +18,7 @@ var UserMenuView = React.createClass({
                 {this.props.thisUser.login} <span className="caret"></span>
               </a>
               <ul className="dropdown-menu" role="menu">
+                <li><a href="#" onClick={ this.endGame }>End Game</a></li>
                 <li><a href="/auth/logout">Logout</a></li>
               </ul>
             </li>

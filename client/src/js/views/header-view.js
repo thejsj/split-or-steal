@@ -12,7 +12,7 @@ var HeaderView = React.createClass({
           <div className="navbar-header">
             <a className="navbar-brand" href="#">Split Or Steal</a>
           </div>
-          <UserMenuView thisUser={ this.props.thisUser }/>
+          <UserMenuView thisUser={ this.props.thisUser } socket={ this.props.socket} />
         </div>
       </nav>
     );
