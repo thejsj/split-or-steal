@@ -25,25 +25,25 @@ A real-time web game based on the prisoner's dilemma using RethinkDB
         [x] GitHub handle
     [x] Login users and add them to the room in RT (only one room at the beginning)
         [x] Have a room variable that contains all users in the room
-    [ ] Add a Create Game button. Create a game
+    [x] Add a Create Game button. Create a game
         [x] Insert new game into database with join for users
         [x] Add a score of 1000 to all players
-    [ ] Create a new round
-        [ ] Start all players with score of 0
-        [ ] Add winner, finalists, players
-    [ ] Add UI for changing bets
+    [x] Create a new round
+        [x] Start all players with score of 0
+        [x] Add winner, finalists, players
+    [x] Add UI for changing bets
         [x] Add LOCK button to lock bet
-        [ ] Update the database when bet is locked
-    [ ] When all bets are in (`.changes`)
-        [ ] Calculate the average (`.reduce`)
-        [ ] Get the closest 2 players. If it's tied, use random
-        [ ] Update the UI with relevant classes
-        [ ] Remove bets from amount
-    [ ] When all finalist decisions are in (`.changes`)
-        [ ] Write split-or-steal logic in JS
-        [ ] Update Winner in database
-        [ ] Update Finalist Scores
+        [x] Update the database when bet is locked
+    [x] When all bets are in (`.changes`)
+        [x] Calculate the average (`.reduce`)
+        [x] Get the closest 2 players. If it's tied, use random
+        [x] Update the UI with relevant classes
+        [x] Remove bets from amount
+    [x] When all finalist decisions are in (`.changes`)
+        [x] Write split-or-steal logic in JS
+        [x] Update Winner in database
+        [x] Update Finalist Scores
     [ ] When winner is declared (`.changes`)
         [ ] Change CSS classes on winner
-    [ ] When players reaches score of 3000 (`.changes`)
-        [ ] Declare a winner!
+    [x] When players reaches score of 3000 (`.changes`)
+        [x] Declare a winner!
