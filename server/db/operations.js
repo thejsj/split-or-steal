@@ -85,6 +85,8 @@ var setFinalists = function (currentGameId, currentRoundId) {
     .get(currentRoundId)('bets')
     .run(r.conn)
     .then(function (data) {
+      console.log('data');
+      console.log(data);
       var max1 = getMax(data);
       delete data[max1[0]];
       var max2 = getMax(data);
@@ -193,6 +195,7 @@ var splitPotAmongstFinalists = function (currentGameId, currentRoundId) {
       var pot = round.pot;
       var finalistResponses = _.pairs(round.finalists);
       var bets = round.bets;
+      console.log('finalistResponses', finalistResponses);
       if (finalistResponses[0][1] === 'steal' && finalistResponses[1][1] === 'steal') {
         console.log('No Winner: Both Steal');
         // Give Everyone Their Money Back

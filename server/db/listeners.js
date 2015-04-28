@@ -10,18 +10,14 @@ var onAllPlayerBetsIn = function (currentGameId, currentRoundId, numberOfPlayers
       .then(function (conn) {
         return r
           .table('rounds')
-          .filter({ id: currentRoundId })('bets')
-          // (0)
-          // .keys().count().ge(2)
+          .get(currentRoundId)
           .changes()
+          .map(r.row('new_val')('bets').keys().count().ge(numberOfPlayers))
           .run(conn)
           .then(function (cursor) {
             cursor.each(function (err, result) {
-              // NOTE: Why can't I use size in the database size and be done with it!
-              if (_.size(result.new_val) === numberOfPlayers) {
-                // console.log('onAllPlayerBetsIn');
-                resolve();
-              }
+              console.log('onAllPlayerBetsIn', result, numberOfPlayers);
+              if (result) resolve();
             });
         });
       })
@@ -36,21 +32,26 @@ var onAllFinalistsIn = function (currentGameId, currentRoundId) {
       .then(function (conn) {
         return r
           .table('rounds')
-          .filter({ id: currentRoundId })('finalists')
-          // (0)
-          // .coerceTo('array')
-          // .map(r.row(1))
-          // .count(function (row) { return row.eq(null); }).eq(0)
+          .get(currentRoundId)
           .changes()
+          .map(r.row('new_val')('finalists').coerceTo('array'))
+          .map(
+            r.expr(true)
+            .and(
+              r.row
+               .count().gt(0)
+            )
+            .and(
+              r.row
+               .count(function (row) { return row(1).eq(null) })
+               .eq(0)
+            )
+          )
           .run(conn)
           .then(function (cursor) {
             cursor.each(function (err, result) {
-              // NOTE: Could I get rid of this by using .toArray on the object
-              if(_.filter(_.pairs(result.new_val), function (entry) {
-                return entry[1] !== null;
-              }).length >= 2) {
-                resolve();
-              }
+              console.log('onAllFinalistsIn', result);
+              if (result) resolve();
             });
           });
       })
